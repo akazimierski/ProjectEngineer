@@ -4,7 +4,9 @@ using System.Collections;
 public class StaticMapDownload : MonoBehaviour {
 
     string startUrl = "https://maps.googleapis.com/maps/api/staticmap";
-    string center = "?center=" + "53.4281462,14.5646163";
+    float latiude = 53.4281462f;
+    float longitude = 14.5646163f;
+    string center = "?center=";
     string zoom = "&zoom=" + "16";
     string size = "&size=" + "512x512";
     string format = "&format=" + "png32";
@@ -14,7 +16,7 @@ public class StaticMapDownload : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        string url = startUrl + center + zoom + size + format + style + key;
+        string url = startUrl + center + latiude + "," + longitude + zoom + size + format + style + key;
         WWW www = new WWW(url);
 
         while (!www.isDone) ;
