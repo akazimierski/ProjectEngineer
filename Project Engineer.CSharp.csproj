@@ -78,6 +78,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\KMLParser.cs" />
     <Compile Include="Assets\Scripts\MercatorProjection.cs" />
     <Compile Include="Assets\Scripts\StaticMapDownload.cs" />
   </ItemGroup>
