@@ -16,6 +16,7 @@ public class StaticMapDownload : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        /*
         string url = startUrl + center + latiude + "," + longitude + zoom + size + format + style + key;
         WWW www = new WWW(url);
 
@@ -37,6 +38,7 @@ public class StaticMapDownload : MonoBehaviour {
         var renderer = plane.GetComponent<Renderer>();
         renderer.material.mainTexture = mapTex;
         renderer.material.shader = Shader.Find("Unlit/Transparent");
+        */
     }
 	
 	// Update is called once per frame
