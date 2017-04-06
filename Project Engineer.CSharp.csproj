@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Edge.cs" />
+    <Compile Include="Assets\Scripts\IdxVertex.cs" />
     <Compile Include="Assets\Scripts\KMLParser.cs" />
     <Compile Include="Assets\Scripts\MercatorProjection.cs" />
     <Compile Include="Assets\Scripts\StaticMapDownload.cs" />

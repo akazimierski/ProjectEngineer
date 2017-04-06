@@ -1,24 +1,27 @@
 ﻿using UnityEngine;
+using System.Linq;
 using System.Collections;
+using System.Collections.Generic;
+using System;
 
-public class Triangulation : MonoBehaviour {
+public class Triangulation : ScriptableObject {
 
-    public Vector3[] triangles;
+    int[] triangles;
     ArrayList trianglesArray = new ArrayList();
 
-    public void Triangulate(Vector3[] vertices)
+    public int[] Triangulate(Vector3[] vertices)
     {
         float minX = vertices[0].x;
-        float minY = vertices[0].y;
+        float minY = vertices[0].z;
         float maxX = minX;
         float maxY = minY;
 
         foreach (Vector3 point in vertices)
         {
             if (point.x < minX) minX = point.x;
-            if (point.y < minY) minY = point.y;
+            if (point.z < minY) minY = point.z;
             if (point.x > maxX) maxX = point.x;
-            if (point.y > maxY) maxY = point.y;
+            if (point.z > maxY) maxY = point.z;
         }
 
         float dx = maxX - minX;
@@ -27,70 +30,157 @@ public class Triangulation : MonoBehaviour {
         float midx = (minX + maxX) / 2.0f;
         float midy = (minY + maxY) / 2.0f;
 
-        Vector3 p1 = new Vector3(midx - 20 * deltaMax, midy - deltaMax);
-        Vector3 p2 = new Vector3(midx, midy +20 * deltaMax);
-        Vector3 p3 = new Vector3(midx + 20 * deltaMax, midy - deltaMax);
+        IdxVertex p1 = new IdxVertex(new Vector3(midx - 20 * deltaMax, 0.0f,midy - deltaMax));
+        IdxVertex p2 = new IdxVertex(new Vector3(midx, 0.0f, midy + 20 * deltaMax));
+        IdxVertex p3 = new IdxVertex(new Vector3(midx + 20 * deltaMax, 0.0f, midy - deltaMax));
 
         trianglesArray.Add(new Triangle(p1, p2, p3)); // idx ??
 
-
         for (int i = 0; i < vertices.Length; i++)
         {
+            IdxVertex p = new IdxVertex(vertices[i], i);
+
             ArrayList badTrianglesArray = new ArrayList();
             ArrayList polygon = new ArrayList();
 
+            
             foreach (Triangle t in trianglesArray)
             {
-                if (t.circumCircleContains(vertices[i]))
+                if (t.circumCircleContains(p.vertex))
                 {
                     badTrianglesArray.Add(t);
-                    polygon.Add(t.e1);
-                    polygon.Add(t.e3);
-                    polygon.Add(t.e2);
+                    if (!polygon.Contains(t.e1))
+                        polygon.Add(t.e1);
+                    else
+                        polygon.Remove(t.e1);
+
+                    if (!polygon.Contains(t.e2))
+                        polygon.Add(t.e2);
+                    else
+                        polygon.Remove(t.e2);
+
+                    if (!polygon.Contains(t.e3))
+                        polygon.Add(t.e3);
+                    else
+                        polygon.Remove(t.e3);
                 }
             }
-
+            
             foreach (Triangle bt in badTrianglesArray)
             {
-                foreach (Triangle t in trianglesArray)
-                {
-                    if (bt.containsVertex(t.p1) && bt.containsVertex(t.p2) && bt.containsVertex(t.p3))
-                    {
-                        trianglesArray.Remove(t);
-                    }
-                }
+                trianglesArray.Remove(bt);
             }
 
-            ArrayList badEdges = new ArrayList();
-
-            for (int e1 = 0; e1 < polygon.Count; e1++)
-            {
-                for (int e2 = 0; e2 < polygon.Count; e2++)
-                {
-                    if (e1 == e2) continue;
-                    if (polygon[e1] == polygon[e2])
-                    {
-                        badEdges.Add(polygon[e1]);
-                        badEdges.Add(polygon[e2]);
-                    }
-                }
-            }
-
+            ArrayList tempTriangles = new ArrayList();
             foreach (Edge e in polygon)
             {
-                foreach (Edge be in badEdges)
-                {
-                    if ((e.p1 == be.p1 && e.p2 == be.p2) || (e.p1 == be.p2 && e.p2 == be.p1))
-                    {
-                        polygon.Remove(e);
-                    }
-                }
+                tempTriangles.Add(new Triangle(e.p1, e.p2, p));
             }
+            //tempTriangles = doFlipIfNeeded(tempTriangles);
 
-            foreach (Edge e in polygon)
+            trianglesArray.AddRange(tempTriangles);
+
+            badTrianglesArray.Clear();
+            polygon.Clear();
+        }
+        
+        ArrayList badTriangles = new ArrayList();
+        foreach (Triangle t in trianglesArray)
+        {
+            if (t.p1.idx == -1 || t.p2.idx == -1 || t.p3.idx == -1)
             {
-                trianglesArray.Add(new Triangle(e.p1, e.p2, vertices[i]));
+                badTriangles.Add(t);
             }
         }
+
+        foreach (Triangle bt in badTriangles)
+        {
+            trianglesArray.Remove(bt);
+        }
+
+        int it = 0;
+        triangles = new int[trianglesArray.Count * 3];
+        foreach (Triangle t in trianglesArray)
+        {
+            triangles[it++] = t.p1.idx;
+            triangles[it++] = t.p2.idx;
+            triangles[it++] = t.p3.idx;
+        }
+        Debug.Log(triangles.Length);
+        return triangles;
+    }
+
+    ArrayList doFlipIfNeeded(ArrayList triangles)
+    {
+        ArrayList delaunayTriangles = new ArrayList();
+        foreach (Triangle t1 in triangles)
+        {
+            foreach (Triangle t2 in triangles)
+            {
+                if (t1 == t2) continue;
+                Edge e;
+                if (hasCommonEdge(t1, t2, out e))
+                {
+                    var tmpDT = getDelaunayTriangles(t1, t2, e);
+                    foreach (var item in tmpDT)
+                        if (!delaunayTriangles.Contains(item)) delaunayTriangles.Add(item);
+                }
+                    
+            }
+        }
+        return delaunayTriangles;
+    }
+
+    private void flipEdge(Triangle t1, Triangle t2,  Edge e)
+    {
+        throw new NotImplementedException();
+    }
+
+    private ArrayList getDelaunayTriangles(Triangle t1, Triangle t2, Edge e)
+    {
+        ArrayList result = new ArrayList();
+        IdxVertex origin1, origin2;
+        if (t1.p1.vertex != e.p1.vertex && t1.p1.vertex != e.p2.vertex ) origin1 = t1.p1;
+        else if (t1.p2.vertex  != e.p1.vertex && t1.p2.vertex  != e.p2.vertex ) origin1 = t1.p2 ;
+        else origin1 = t1.p3 ;
+
+        if (t2.p1.vertex != e.p1.vertex && t2.p1.vertex != e.p2.vertex ) origin2 = t2.p1;
+        else if (t2.p2.vertex  != e.p1.vertex && t2.p2.vertex  != e.p2.vertex ) origin2 = t2.p2 ;
+        else origin2 = t2.p3 ;
+
+        float angle1 = Vector3.Angle(e.p1.vertex - origin1.vertex, e.p2.vertex - origin1.vertex);
+        float angle2 = Vector3.Angle(e.p1.vertex - origin2.vertex, e.p2.vertex - origin2.vertex);
+
+        if ((angle1 + angle2) >= 180f)
+        {
+            result.Add(new Triangle(origin1, origin2, e.p1));
+            result.Add(new Triangle(origin1, origin2, e.p2));
+            return result;
+        }
+        result.Add(t1);
+        result.Add(t2);
+        return result;
+    }
+
+    private bool hasCommonEdge(Triangle t1, Triangle t2, out Edge e)
+    {
+        
+        if (t1.e1 == t2.e1 || t1.e1 == t2.e2 || t1.e1 == t2.e3)
+        {
+            e = t1.e1;
+            return true;
+        }
+        if (t1.e2 == t2.e1 || t1.e2 == t2.e2 || t1.e2 == t2.e3)
+        {
+            e = t1.e2;
+            return true;
+        }
+        if (t1.e3 == t2.e1 || t1.e3 == t2.e2 || t1.e3 == t2.e3)
+        {
+            e = t1.e3;
+            return true;
+        }
+        e = null;
+        return false;
     }
 }

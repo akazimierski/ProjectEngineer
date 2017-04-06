@@ -7,7 +7,7 @@ using System.Collections;
 //var zoom = 10;
 //getCorners(centerPoint, zoom,640,640);
 
-public class MercatorProjection : MonoBehaviour {
+public class MercatorProjection {
 
     int MERCATOR_RANGE = 256;
 
@@ -15,10 +15,10 @@ public class MercatorProjection : MonoBehaviour {
     float pixelsPerLonDegree;
     float pixelsPerLonRadian;
 
-    MercatorProjection()
+    public MercatorProjection()
     {
         this.pixelOrigin = new Vector2(MERCATOR_RANGE / 2, MERCATOR_RANGE / 2);
-        this.pixelsPerLonDegree = MERCATOR_RANGE / 360;
+        this.pixelsPerLonDegree = MERCATOR_RANGE / 360f;
         this.pixelsPerLonRadian = MERCATOR_RANGE / (2 * Mathf.PI);
     }
 
@@ -68,7 +68,7 @@ public class MercatorProjection : MonoBehaviour {
     //pixelCoordinate = worldCoordinate * Math.pow(2,zoomLevel)
 
 
-    Vector2[] getCorners(Vector2 center, int zoom, int mapWidth, int mapHeight)
+    public Vector2[] getCorners(Vector2 center, int zoom, int mapWidth, int mapHeight)
     {
         var scale = Mathf.Pow(2, zoom);
         var centerPx = fromLatLngToPoint(center);
@@ -81,6 +81,22 @@ public class MercatorProjection : MonoBehaviour {
 
         Vector2[] corners = { SWLatLon, NELatLon };
         return corners;
+    }
+
+    public float distanceBetweenCoord(Vector2 latlong1, Vector2 latlong2)
+    {
+        var earthRadiusKm = 6371;
+
+        var dLat = degreesToRadians(latlong2.x - latlong1.x);
+        var dLon = degreesToRadians(latlong2.y - latlong1.x);
+
+        var lat1 = degreesToRadians(latlong1.x);
+        var lat2 = degreesToRadians(latlong2.x);
+
+        var a = Mathf.Sin(dLat / 2) * Mathf.Sin(dLat / 2) +
+                Mathf.Sin(dLon / 2) * Mathf.Sin(dLon / 2) * Mathf.Cos(lat1) * Mathf.Cos(lat2);
+        var c = 2 * Mathf.Atan2(Mathf.Sqrt(a), Mathf.Sqrt(1 - a));
+        return earthRadiusKm * c;
     }
 
 
