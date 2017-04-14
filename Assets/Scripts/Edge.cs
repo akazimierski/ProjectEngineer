@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System;
+using System.Collections.Generic;
 
-public class Edge : Object
+public class Edge : object
 {
 
     public IdxVertex p1;
@@ -19,6 +20,11 @@ public class Edge : Object
         p2 = e.p2;
     }
 
+    public float getKey()
+    {
+        return p1.vertex.magnitude * p2.vertex.magnitude;
+    }
+    /*
     public override bool Equals(object obj)
     {
         // If parameter is null return false.
@@ -35,11 +41,12 @@ public class Edge : Object
         }
 
         // Return true if the fields match:
-        return (p1.vertex == e2.p1.vertex && p2.vertex == e2.p2.vertex) || 
-            (p1.vertex == e2.p2.vertex && p2.vertex == e2.p1.vertex);
+        return (p1.idx == e2.p1.idx && p2.idx == e2.p2.idx) || 
+            (p1.idx == e2.p2.idx && p2.idx == e2.p1.idx);
     }
-
-    public bool Equals(Edge e2)
+    */
+    /*
+    public bool Equals(Edge e1, Edge e2)
     {
         // If parameter is null return false:
         if ((object)e2 == null)
@@ -48,25 +55,38 @@ public class Edge : Object
         }
 
         // Return true if the fields match:
-        return (p1.vertex == e2.p1.vertex && p2.vertex == e2.p2.vertex) ||
-            (p1.vertex == e2.p2.vertex && p2.vertex == e2.p1.vertex);
+        return (e1.p1.idx == e2.p1.idx && e1.p2.idx == e2.p2.idx) ||
+            (e1.p1.idx == e2.p2.idx && e1.p2.idx == e2.p1.idx);
+    }
+    */
+    /*
+    bool IEqualityComparer<Edge>.Equals(Edge e1, Edge e2)
+    {
+        return (e1.p1.idx == e2.p1.idx && e1.p2.idx == e2.p2.idx) ||
+            (e1.p1.idx == e2.p2.idx && e1.p2.idx == e2.p1.idx);
     }
 
+    int IEqualityComparer<Edge>.GetHashCode(Edge obj)
+    {
+        return obj.p1.idx ^ obj.p2.idx;
+    }
+    */
+    /*
     public override int GetHashCode()
     {
-        return p1.idx * p2.idx;
+       return p1.idx * p2.idx;
     }
-
+    
     public static bool operator ==(Edge e1, Edge e2)
     {
-        return (e1.p1.vertex == e2.p1.vertex && e1.p2.vertex == e2.p2.vertex) || 
-            (e1.p1.vertex == e2.p2.vertex && e1.p2.vertex == e2.p1.vertex);
+       return (e1.p1.idx == e2.p1.idx && e1.p2.idx == e2.p2.idx) || 
+           (e1.p1.idx == e2.p2.idx && e1.p2.idx == e2.p1.idx);
     }
 
     public static bool operator !=(Edge e1, Edge e2)
     {
-        return !(e1 == e2);
+       return !(e1 == e2);
     }
-
+    */
 
 }

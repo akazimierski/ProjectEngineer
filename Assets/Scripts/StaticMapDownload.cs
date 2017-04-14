@@ -3,16 +3,17 @@ using System.Collections;
 
 // 53.0817322,14.3644296
 // 40.893774, -73.923017
+// 42.385367, -71.035441
 // float latiude = 53.4281462f;
 // float longitude = 14.5646163f
 
 public class StaticMapDownload : MonoBehaviour {
 
     string startUrl = "https://maps.googleapis.com/maps/api/staticmap";
-    float latiude = 40.893774f;
-    float longitude = -73.923017f;
+    float latiude = 42.385367f;
+    float longitude = -71.035441f;
     string center = "?center=";
-    string zoom = "&zoom=" + "16";
+    string zoom = "&zoom=" + "17";
     string size = "&size=" + "512x512";
     string format = "&format=" + "png32";
     string style = "&style=" + "element:labels|visibility:off" + "&style=" + "feature:water|color:0x000000";
@@ -48,15 +49,19 @@ public class StaticMapDownload : MonoBehaviour {
         
 
         MercatorProjection mp = new MercatorProjection();
-        Vector2[] corners = mp.getCorners(new Vector2(latiude, longitude), 16, 512, 512);
+        Vector2[] corners = mp.getCorners(new Vector2(latiude, longitude), 17, 512, 512);
         Debug.Log(corners[0] + ", " + corners[1]);
+        var distance = mp.distanceBetweenCoord(corners[0], corners[1]);
+        Debug.Log("Distance " + distance);
+
+        float heightRatio = (10 * Mathf.Sqrt(2)) / distance;
 
         KMLParser parser = (KMLParser)ScriptableObject.CreateInstance(typeof(KMLParser));
         parser.getXmlData(corners);
-        vertices = parser.getVertices();
+        vertices = parser.getVertices(heightRatio);
         
         Triangulation delaunay = (Triangulation)ScriptableObject.CreateInstance(typeof(Triangulation));
-        var triangles = delaunay.Triangulate(vertices);
+        var triangles = delaunay.triangulate(vertices);
 
         
 
@@ -66,12 +71,7 @@ public class StaticMapDownload : MonoBehaviour {
         Debug.Log(Mathf.Min(triangles) + " " + Mathf.Max(triangles));
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
-        /*
-        var normals = mesh.normals;
-        for (int i = 0; i < normals.Length; i++)
-            normals[i] = Vector3.Reflect(normals[i]., Vector3.up);
-        mesh.normals = normals;
-        */
+
     }
     
     void OnDrawGizmosSelected()

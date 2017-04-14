@@ -7,9 +7,9 @@ using System;
 public class Triangulation : ScriptableObject {
 
     int[] triangles;
-    ArrayList trianglesArray = new ArrayList();
+    HashSet<Triangle> trianglesArray = new HashSet<Triangle>();
 
-    public int[] Triangulate(Vector3[] vertices)
+    public int[] triangulate(Vector3[] vertices)
     {
         float minX = vertices[0].x;
         float minY = vertices[0].z;
@@ -40,29 +40,31 @@ public class Triangulation : ScriptableObject {
         {
             IdxVertex p = new IdxVertex(vertices[i], i);
 
-            ArrayList badTrianglesArray = new ArrayList();
-            ArrayList polygon = new ArrayList();
+            HashSet<Triangle> badTrianglesArray = new HashSet<Triangle>();
+            Dictionary<float, Edge> polygon = new Dictionary<float, Edge>();
 
-            
             foreach (Triangle t in trianglesArray)
             {
                 if (t.circumCircleContains(p.vertex))
                 {
                     badTrianglesArray.Add(t);
-                    if (!polygon.Contains(t.e1))
-                        polygon.Add(t.e1);
+                    float key1 = t.e1.getKey();
+                    float key2 = t.e2.getKey();
+                    float key3 = t.e3.getKey();
+                    if (!polygon.ContainsKey(key1))
+                        polygon.Add(key1, t.e1);
                     else
-                        polygon.Remove(t.e1);
+                        polygon.Remove(key1);
 
-                    if (!polygon.Contains(t.e2))
-                        polygon.Add(t.e2);
+                    if (!polygon.ContainsKey(key2))
+                        polygon.Add(key2, t.e2);
                     else
-                        polygon.Remove(t.e2);
+                        polygon.Remove(key2);
 
-                    if (!polygon.Contains(t.e3))
-                        polygon.Add(t.e3);
+                    if (!polygon.ContainsKey(key3))
+                        polygon.Add(key3, t.e3);
                     else
-                        polygon.Remove(t.e3);
+                        polygon.Remove(key3);
                 }
             }
             
@@ -71,20 +73,23 @@ public class Triangulation : ScriptableObject {
                 trianglesArray.Remove(bt);
             }
 
-            ArrayList tempTriangles = new ArrayList();
-            foreach (Edge e in polygon)
+            HashSet<Triangle> tempTriangles = new HashSet<Triangle>();
+            foreach (var e in polygon)
             {
-                tempTriangles.Add(new Triangle(e.p1, e.p2, p));
+                tempTriangles.Add(new Triangle(e.Value.p1, e.Value.p2, p));
             }
-            //tempTriangles = doFlipIfNeeded(tempTriangles);
+            tempTriangles = doFlipIfNeeded(tempTriangles);
 
-            trianglesArray.AddRange(tempTriangles);
+            foreach (Triangle tmp in tempTriangles)
+            {
+                trianglesArray.Add(tmp);
+            }
 
             badTrianglesArray.Clear();
             polygon.Clear();
         }
-        
-        ArrayList badTriangles = new ArrayList();
+
+        HashSet<Triangle> badTriangles = new HashSet<Triangle>();
         foreach (Triangle t in trianglesArray)
         {
             if (t.p1.idx == -1 || t.p2.idx == -1 || t.p3.idx == -1)
@@ -110,9 +115,9 @@ public class Triangulation : ScriptableObject {
         return triangles;
     }
 
-    ArrayList doFlipIfNeeded(ArrayList triangles)
+    HashSet<Triangle> doFlipIfNeeded(HashSet<Triangle> triangles)
     {
-        ArrayList delaunayTriangles = new ArrayList();
+        HashSet<Triangle> delaunayTriangles = new HashSet<Triangle>();
         foreach (Triangle t1 in triangles)
         {
             foreach (Triangle t2 in triangles)
@@ -123,29 +128,26 @@ public class Triangulation : ScriptableObject {
                 {
                     var tmpDT = getDelaunayTriangles(t1, t2, e);
                     foreach (var item in tmpDT)
-                        if (!delaunayTriangles.Contains(item)) delaunayTriangles.Add(item);
+                        if (!delaunayTriangles.Contains(item))
+                            delaunayTriangles.Add(item);
                 }
                     
             }
         }
+        if (delaunayTriangles.Count == 0) return triangles;
         return delaunayTriangles;
     }
 
-    private void flipEdge(Triangle t1, Triangle t2,  Edge e)
+    private Triangle[] getDelaunayTriangles(Triangle t1, Triangle t2, Edge e)
     {
-        throw new NotImplementedException();
-    }
-
-    private ArrayList getDelaunayTriangles(Triangle t1, Triangle t2, Edge e)
-    {
-        ArrayList result = new ArrayList();
+        HashSet<Triangle> result = new HashSet<Triangle>();
         IdxVertex origin1, origin2;
-        if (t1.p1.vertex != e.p1.vertex && t1.p1.vertex != e.p2.vertex ) origin1 = t1.p1;
-        else if (t1.p2.vertex  != e.p1.vertex && t1.p2.vertex  != e.p2.vertex ) origin1 = t1.p2 ;
+        if (t1.p1.idx != e.p1.idx && t1.p1.idx != e.p2.idx ) origin1 = t1.p1;
+        else if (t1.p2.idx  != e.p1.idx && t1.p2.idx  != e.p2.idx ) origin1 = t1.p2 ;
         else origin1 = t1.p3 ;
 
-        if (t2.p1.vertex != e.p1.vertex && t2.p1.vertex != e.p2.vertex ) origin2 = t2.p1;
-        else if (t2.p2.vertex  != e.p1.vertex && t2.p2.vertex  != e.p2.vertex ) origin2 = t2.p2 ;
+        if (t2.p1.idx != e.p1.idx && t2.p1.idx != e.p2.idx ) origin2 = t2.p1;
+        else if (t2.p2.idx  != e.p1.idx && t2.p2.idx  != e.p2.idx ) origin2 = t2.p2 ;
         else origin2 = t2.p3 ;
 
         float angle1 = Vector3.Angle(e.p1.vertex - origin1.vertex, e.p2.vertex - origin1.vertex);
@@ -155,11 +157,11 @@ public class Triangulation : ScriptableObject {
         {
             result.Add(new Triangle(origin1, origin2, e.p1));
             result.Add(new Triangle(origin1, origin2, e.p2));
-            return result;
+            return result.ToArray();
         }
         result.Add(t1);
         result.Add(t2);
-        return result;
+        return result.ToArray();
     }
 
     private bool hasCommonEdge(Triangle t1, Triangle t2, out Edge e)

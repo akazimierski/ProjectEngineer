@@ -85,10 +85,10 @@ public class MercatorProjection {
 
     public float distanceBetweenCoord(Vector2 latlong1, Vector2 latlong2)
     {
-        var earthRadiusKm = 6371;
+        var earthRadius = 6371000;
 
         var dLat = degreesToRadians(latlong2.x - latlong1.x);
-        var dLon = degreesToRadians(latlong2.y - latlong1.x);
+        var dLon = degreesToRadians(latlong2.y - latlong1.y);
 
         var lat1 = degreesToRadians(latlong1.x);
         var lat2 = degreesToRadians(latlong2.x);
@@ -96,7 +96,7 @@ public class MercatorProjection {
         var a = Mathf.Sin(dLat / 2) * Mathf.Sin(dLat / 2) +
                 Mathf.Sin(dLon / 2) * Mathf.Sin(dLon / 2) * Mathf.Cos(lat1) * Mathf.Cos(lat2);
         var c = 2 * Mathf.Atan2(Mathf.Sqrt(a), Mathf.Sqrt(1 - a));
-        return earthRadiusKm * c;
+        return earthRadius * c;
     }
 
 

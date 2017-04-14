@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System;
+using System.Collections.Generic;
 
 public class Triangle : object
 {
@@ -53,56 +54,72 @@ public class Triangle : object
         float dist = Mathf.Sqrt(((v.x - circum_x) * (v.x - circum_x)) + ((v.z - circum_y) * (v.z - circum_y)));
 	    return dist <= circum_radius;
     }
+    /*
+    bool IEqualityComparer<Triangle>.Equals(Triangle t1, Triangle t2)
+    {
+        return (t1.p1.idx == t2.p1.idx || t1.p1.idx == t2.p2.idx || t1.p1.idx == t2.p3.idx) &&
+           (t1.p2.idx == t2.p1.idx || t1.p2.idx == t2.p2.idx || t1.p2.idx == t2.p3.idx) &&
+           (t1.p3.idx == t2.p1.idx || t1.p3.idx == t2.p2.idx || t1.p3.idx == t2.p3.idx);
+    }
 
+    int IEqualityComparer<Triangle>.GetHashCode(Triangle obj)
+    {
+        return obj.p1.idx * obj.p2.idx ^ obj.p3.idx;
+    }
+    */
+    /*
     public override bool Equals(object obj)
     {
-        // If parameter is null return false.
-        if (obj == null)
-        {
-            return false;
-        }
+       // If parameter is null return false.
+       if (obj == null)
+       {
+           return false;
+       }
 
-        // If parameter cannot be cast to Point return false.
-        Triangle t2 = obj as Triangle;
-        if ((object)t2 == null)
-        {
-            return false;
-        }
+       // If parameter cannot be cast to Point return false.
+       Triangle t2 = obj as Triangle;
+       if ((object)t2 == null)
+       {
+           return false;
+       }
 
-        // Return true if the fields match:
-        return (p1.vertex == t2.p1.vertex || p1.vertex == t2.p2.vertex || p1.vertex == t2.p3.vertex) &&
-                (p2.vertex == t2.p1.vertex || p2.vertex == t2.p2.vertex || p2.vertex == t2.p3.vertex) &&
-                (p3.vertex == t2.p1.vertex || p3.vertex == t2.p2.vertex || p3.vertex == t2.p3.vertex);
+       // Return true if the fields match:
+       return (p1.idx == t2.p1.idx || p1.idx == t2.p2.idx || p1.idx == t2.p3.idx) &&
+               (p2.idx == t2.p1.idx || p2.idx == t2.p2.idx || p2.idx == t2.p3.idx) &&
+               (p3.idx == t2.p1.idx || p3.idx == t2.p2.idx || p3.idx == t2.p3.idx);
     }
-
-    public bool Equals(Triangle t2)
+    */
+    /*
+    public override bool Equals(Triangle t2)
     {
-        // If parameter is null return false:
-        if ((object)t2 == null)
-        {
-            return false;
-        }
+       // If parameter is null return false:
+       if ((object)t2 == null)
+       {
+           return false;
+       }
 
-        // Return true if the fields match:
-        return (p1.vertex == t2.p1.vertex || p1.vertex == t2.p2.vertex || p1.vertex == t2.p3.vertex) &&
-                (p2.vertex == t2.p1.vertex || p2.vertex == t2.p2.vertex || p2.vertex == t2.p3.vertex) &&
-                (p3.vertex == t2.p1.vertex || p3.vertex == t2.p2.vertex || p3.vertex == t2.p3.vertex);
+       // Return true if the fields match:
+       return (p1.idx == t2.p1.idx || p1.idx == t2.p2.idx || p1.idx == t2.p3.idx) &&
+               (p2.idx == t2.p1.idx || p2.idx == t2.p2.idx || p2.idx == t2.p3.idx) &&
+               (p3.idx == t2.p1.idx || p3.idx == t2.p2.idx || p3.idx == t2.p3.idx);
     }
-
+    */
+    /*
     public override int GetHashCode()
     {
-        return p1.idx * p2.idx * p3.idx;
+       return p1.idx * p2.idx * p3.idx;
     }
-
+    
     public static bool operator ==(Triangle t1, Triangle t2)
     {
-	    return	(t1.p1.vertex == t2.p1.vertex || t1.p1.vertex == t2.p2.vertex|| t1.p1.vertex == t2.p3.vertex) &&
-			    (t1.p2.vertex == t2.p1.vertex || t1.p2.vertex == t2.p2.vertex|| t1.p2.vertex == t2.p3.vertex) && 
-			    (t1.p3.vertex == t2.p1.vertex || t1.p3.vertex == t2.p2.vertex|| t1.p3.vertex == t2.p3.vertex);
+       return	(t1.p1.idx == t2.p1.idx || t1.p1.idx == t2.p2.idx|| t1.p1.idx == t2.p3.idx) &&
+               (t1.p2.idx == t2.p1.idx || t1.p2.idx == t2.p2.idx|| t1.p2.idx == t2.p3.idx) && 
+               (t1.p3.idx == t2.p1.idx || t1.p3.idx == t2.p2.idx|| t1.p3.idx == t2.p3.idx);
     }
 
     public static bool operator !=(Triangle t1, Triangle t2)
     {
-        return !(t1 == t2);
+       return !(t1 == t2);
     }
+    */
 }
