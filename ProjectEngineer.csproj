@@ -85,6 +85,7 @@
     <Compile Include="Assets\Scripts\StaticMapDownload.cs" />
     <Compile Include="Assets\Scripts\Triangle.cs" />
     <Compile Include="Assets\Scripts\Triangulation.cs" />
+    <Compile Include="Assets\Scripts\test_Triangulation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Standard Assets\Environment\Water (Basic)\Shaders\FXWaterBasic.shader" />

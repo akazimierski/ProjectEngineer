@@ -78,7 +78,7 @@ public class Triangulation : ScriptableObject {
             {
                 tempTriangles.Add(new Triangle(e.Value.p1, e.Value.p2, p));
             }
-            tempTriangles = doFlipIfNeeded(tempTriangles);
+            //tempTriangles = doFlipIfNeeded(tempTriangles);
 
             foreach (Triangle tmp in tempTriangles)
             {
@@ -102,6 +102,11 @@ public class Triangulation : ScriptableObject {
         {
             trianglesArray.Remove(bt);
         }
+
+        // ******** TEST **********
+        //test_Triangulation.test_TriangulationMesh(trianglesArray);
+        //Debug.Log("TEST - FLIPS DONE: " + test_Triangulation.flipsDone);
+        // ************************
 
         int it = 0;
         triangles = new int[trianglesArray.Count * 3];

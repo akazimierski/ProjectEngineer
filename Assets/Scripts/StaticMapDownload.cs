@@ -10,10 +10,10 @@ using System.Collections;
 public class StaticMapDownload : MonoBehaviour {
 
     string startUrl = "https://maps.googleapis.com/maps/api/staticmap";
-    float latiude = 42.385367f;
-    float longitude = -71.035441f;
+    float latiude = 40.893774f;
+    float longitude = -73.923017f;
     string center = "?center=";
-    string zoom = "&zoom=" + "17";
+    string zoom = "&zoom=" + "14";
     string size = "&size=" + "512x512";
     string format = "&format=" + "png32";
     string style = "&style=" + "element:labels|visibility:off" + "&style=" + "feature:water|color:0x000000";
@@ -49,7 +49,7 @@ public class StaticMapDownload : MonoBehaviour {
         
 
         MercatorProjection mp = new MercatorProjection();
-        Vector2[] corners = mp.getCorners(new Vector2(latiude, longitude), 17, 512, 512);
+        Vector2[] corners = mp.getCorners(new Vector2(latiude, longitude), 14, 512, 512);
         Debug.Log(corners[0] + ", " + corners[1]);
         var distance = mp.distanceBetweenCoord(corners[0], corners[1]);
         Debug.Log("Distance " + distance);

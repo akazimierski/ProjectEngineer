@@ -13,7 +13,7 @@ public class KMLParser : ScriptableObject {
         string coordinatesString = "";
         Vector3 pointCoord;
         var doc = new XmlDocument();
-        XmlTextReader reader = new XmlTextReader(UnityEngine.Application.dataPath + "/KMLData/depareusa1.kml");
+        XmlTextReader reader = new XmlTextReader(UnityEngine.Application.dataPath + "/KMLData/depareusa.kml");
         reader.Read();
         doc.Load(reader);
 
