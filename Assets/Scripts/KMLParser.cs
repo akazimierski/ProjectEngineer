@@ -3,19 +3,24 @@ using System.Collections;
 using System.Xml;
 using System.IO;
 
+// "/KMLData/depareusa.kml"
+
 public class KMLParser : ScriptableObject {
 
     ArrayList points = new ArrayList();
 
-    public void getXmlData(Vector2[] corners)
+    public void getXmlData(Vector2[] corners, string kmldata)
     {
         string depthString = "";
         string coordinatesString = "";
         Vector3 pointCoord;
+
+        //TextAsset xmlData = new TextAsset();
+        //xmlData = Resources.Load(kmldata) as TextAsset;
+        string xmlData = File.ReadAllText("Assets/Resources/" + kmldata + ".kml");
+
         var doc = new XmlDocument();
-        XmlTextReader reader = new XmlTextReader(UnityEngine.Application.dataPath + "/KMLData/depareusa.kml");
-        reader.Read();
-        doc.Load(reader);
+        doc.LoadXml(xmlData);
 
         XmlNode folder = doc.ChildNodes[1].ChildNodes[0].ChildNodes[1];
         for (int i = 1; i < folder.ChildNodes.Count; i++)
@@ -41,7 +46,7 @@ public class KMLParser : ScriptableObject {
                 
             }
         }
-        reader.Close();
+        //reader.Close();
         Debug.Log(points.Count);
     }
     

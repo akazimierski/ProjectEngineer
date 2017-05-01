@@ -7,7 +7,7 @@ using System.Collections;
 // float latiude = 53.4281462f;
 // float longitude = 14.5646163f
 
-public class StaticMapDownload : MonoBehaviour {
+public class StaticMapDownload {
 
     string startUrl = "https://maps.googleapis.com/maps/api/staticmap";
     float latiude = 40.893774f;
@@ -18,12 +18,16 @@ public class StaticMapDownload : MonoBehaviour {
     string format = "&format=" + "png32";
     string style = "&style=" + "element:labels|visibility:off" + "&style=" + "feature:water|color:0x000000";
     string key = "&key=AIzaSyBWLfFwdWQUpZn0gJ6ljq67n8Y2A2x6OzE";
-    public GameObject plane;
 
-    Vector3[] vertices = new Vector3[1];
-
-    // Use this for initialization
-    void Start () {
+    public Texture2D downloadImage(string latLong = null, int _zoom = 14)
+    {
+        if (latLong != null)
+        {
+            string[] latLongArray = latLong.Split(',');
+            latiude = float.Parse(latLongArray[0]);
+            longitude = float.Parse(latLongArray[1]);
+            zoom = "&zoom=" + _zoom.ToString();
+        }
         
         string url = startUrl + center + latiude + "," + longitude + zoom + size + format + style + key;
         WWW www = new WWW(url);
@@ -42,39 +46,15 @@ public class StaticMapDownload : MonoBehaviour {
         }
         mapTex.SetPixels(pixels);
         mapTex.Apply();
-             
-        var renderer = plane.GetComponent<Renderer>();
-        renderer.material.mainTexture = mapTex;
-        renderer.material.shader = Shader.Find("Unlit/Transparent");
+        return mapTex;
+    }
+
+    // Use this for initialization
+    void Start () {
         
-
-        MercatorProjection mp = new MercatorProjection();
-        Vector2[] corners = mp.getCorners(new Vector2(latiude, longitude), 14, 512, 512);
-        Debug.Log(corners[0] + ", " + corners[1]);
-        var distance = mp.distanceBetweenCoord(corners[0], corners[1]);
-        Debug.Log("Distance " + distance);
-
-        float heightRatio = (10 * Mathf.Sqrt(2)) / distance;
-
-        KMLParser parser = (KMLParser)ScriptableObject.CreateInstance(typeof(KMLParser));
-        parser.getXmlData(corners);
-        vertices = parser.getVertices(heightRatio);
-        
-        Triangulation delaunay = (Triangulation)ScriptableObject.CreateInstance(typeof(Triangulation));
-        var triangles = delaunay.triangulate(vertices);
-
-        
-
-        Mesh mesh = new Mesh();
-        GetComponent<MeshFilter>().mesh = mesh;
-        mesh.vertices = vertices;
-        Debug.Log(Mathf.Min(triangles) + " " + Mathf.Max(triangles));
-        mesh.triangles = triangles;
-        mesh.RecalculateNormals();
-
     }
     
-    void OnDrawGizmosSelected()
+    /*void OnDrawGizmosSelected()
     {
         if (vertices != null)
         {
@@ -91,6 +71,6 @@ public class StaticMapDownload : MonoBehaviour {
                 Gizmos.DrawSphere(item, 0.3f);
             }
         }
-    }
+    }*/
     
 }
