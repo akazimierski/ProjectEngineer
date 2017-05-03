@@ -17,6 +17,10 @@ public class ZoomOutScript : MonoBehaviour
 
     public void Movement()
     {
-        charContr.Translate(Vector3.back * 0.2f, Space.Self);
+        if (charContr.position.y <= 2.9f)
+        {
+            charContr.Translate(Vector3.back * 0.2f, Space.Self);
+        }
+
     }
 }

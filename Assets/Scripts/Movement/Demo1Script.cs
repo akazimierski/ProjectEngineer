@@ -13,7 +13,10 @@ public class Demo1Script : MonoBehaviour
     }
 	
 	// Update is called once per frame
-	void SelectLocation() {
+	void SelectLocation()
+    {
         mapMaker.GetComponent<MapMaker>().makeMap("42.385367,-71.035441", 17, "depareusa1");
+        var dialog = GameObject.Find("DialogLocation");
+        dialog.SetActive(false);
 	}
 }

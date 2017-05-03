@@ -16,6 +16,11 @@ public class MoveUpScript : MonoBehaviour {
 
     public void Movement()
     {
-        charContr.Move(Vector3.back * 0.5f);
+        if (Mathf.Abs(charContr.transform.position.x + Vector3.back.x * 0.5f) < 3.0f
+            && Mathf.Abs(charContr.transform.position.z + Vector3.back.z * 0.5f) < 3.0f)
+        {
+            charContr.Move(Vector3.back * 0.5f);
+        }
+        
     }
 }

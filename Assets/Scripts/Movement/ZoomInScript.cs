@@ -18,6 +18,9 @@ public class ZoomInScript : MonoBehaviour
 
     public void Movement()
     {
-        charContr.Translate(Vector3.forward * 0.2f, Space.Self);
+        if (charContr.position.y >= 1.0f)
+        {
+            charContr.Translate(Vector3.forward * 0.2f, Space.Self);
+        }
     }
 }

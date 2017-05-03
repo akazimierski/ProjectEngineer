@@ -18,6 +18,10 @@ public class MoveLeftScript : MonoBehaviour
 
     public void Movement()
     {
-        charContr.Move(Vector3.right * 0.5f);
+        if (Mathf.Abs(charContr.transform.position.x + Vector3.right.x * 0.5f) < 3.0f
+            && Mathf.Abs(charContr.transform.position.z + Vector3.right.z * 0.5f) < 3.0f)
+        {
+            charContr.Move(Vector3.right * 0.5f);
+        }
     }
 }

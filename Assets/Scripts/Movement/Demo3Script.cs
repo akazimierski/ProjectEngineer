@@ -17,5 +17,7 @@ public class Demo3Script : MonoBehaviour
     void SelectLocation()
     {
         mapMaker.GetComponent<MapMaker>().makeMap("53.0817322,14.3644296", 16, "depare");
+        var dialog = GameObject.Find("DialogLocation");
+        dialog.SetActive(false);
     }
 }
